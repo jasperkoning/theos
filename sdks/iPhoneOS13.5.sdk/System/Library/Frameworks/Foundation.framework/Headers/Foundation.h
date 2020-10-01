@@ -190,3 +190,12 @@
 #endif /* TARGET_OS_OSX */
 
 #import <Foundation/FoundationLegacySwiftCompatibility.h>
+
+//void p(NSString *str);
+//void p(int i);
+//void p(double d);
+////void p(char const *str);
+////void p(char c);
+////void p(unsigned u);
+////void p(unsigned long u);
+

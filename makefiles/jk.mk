@@ -1,14 +1,18 @@
 JK_SDK = $(THEOS)/sdks/iPhoneOS13.5.sdk
-JK_LIB = /usr/local/lib
-JK_INCLUDE = /usr/local/include
+lib = /usr/local/lib
+include = /usr/local/include
+vendor = $(THEOS)/vendor
 
 CC = clang -isysroot $(JK_SDK)
 CXX = clang++ -isysroot $(JK_SDK)
 
-JK_VENDOR = $(THEOS)/vendor
+objects = $(foreach file, $(files), \
+  $(BUILD)/$(patsubst %.mm,%.o,$(file:.m=.o)))
+
+
 JK_SYSROOT = -isysroot $(JK_SDK)
 JK_CLANG = clang $(JK_SYSROOT)
 JK_CLANG++ = clang++ $(JK_SYSROOT)
-JK_LSUBSTRATE = -L$(JK_VENDOR)/lib,-lsubstrate
+JK_LSUBSTRATE = -L$(vendor)/lib,-lsubstrate
 
 dir_guard=@mkdir -p $(@D)
