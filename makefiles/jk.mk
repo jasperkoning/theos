@@ -6,3 +6,5 @@ JK_CLANG++ = clang++ $(JK_SYSROOT)
 JK_LIB = /usr/local/lib
 JK_INCLUDE = /usr/local/include
 JK_LSUBSTRATE = -L$(JK_VENDOR)/lib,-lsubstrate
+
+dir_guard=@mkdir -p $(@D)
