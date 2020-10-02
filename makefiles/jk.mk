@@ -1,3 +1,14 @@
+
+$(BUILD)/%.o: %.m
+	@echo compiling $<
+	@$(CC) -c -I$(include) $< -o $@
+
+$(BUILD)/%.o: %.mm
+	@echo compiling $<
+	@$(CXX) -c -I$(include) $< -o $@
+
+$(shell mkdir -p $(BUILD))
+
 JK_SDK = $(THEOS)/sdks/iPhoneOS13.5.sdk
 lib = /usr/local/lib
 include = /usr/local/include
