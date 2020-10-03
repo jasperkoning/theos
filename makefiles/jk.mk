@@ -1,5 +1,5 @@
-BUILD = build
-name ?= a
+BUILD ?= build
+name ?= a.out
 
 $(shell mkdir -p $(BUILD))
 
@@ -46,6 +46,7 @@ clean:
 	@rm -f $(BUILD)/main.o $(objects) \
 	$(library) $(headers) $(name)
 
+a:clean all
 
 
 
