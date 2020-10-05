@@ -13,12 +13,13 @@ CXX = clang++ -isysroot $(JK_SDK)
 
 objects = $(foreach file, $(files), $(BUILD)/$(patsubst %.mm,%.o,$(file:.m=.o)))
 frameworkflags = $(foreach framework, $(frameworks), -framework $(framework))
-libflags = -L$(dir $(library)) -l$(patsubst lib%.a,%,$(notdir $(library)))
 
 ifdef library
 mainlink = $(BUILD)/main.o
+libflags = -L$(dir $(library)) -l$(patsubst lib%.a,%,$(notdir $(library)))
 else
 mainlink = $(objects)
+libflags = 
 endif
 
 all: $(name)
