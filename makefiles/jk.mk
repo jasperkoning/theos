@@ -11,7 +11,7 @@ vendor = $(THEOS)/vendor
 CC = clang -isysroot $(JK_SDK)
 CXX = clang++ -isysroot $(JK_SDK)
 
-objects = $(foreach file, $(files), $(BUILD)/$(patsubst %.mm,%.o,$(file:.m=.o)))
+objects = $(foreach file, $(files), $(BUILD)/$(patsubst %.mm,%.o,$(patsubst %.xm,%.o,$(file:.m=.o))))
 frameworkflags = $(foreach framework, $(frameworks), -framework $(framework))
 
 ifdef library
@@ -26,19 +26,27 @@ all: $(name)
 
 $(name): $(mainlink) $(library)
 	@echo linking: $(notdir $^)
-	@$(CXX) -L$(vendor)/lib -L$(lib) $(libflags) $(frameworkflags) $(ldflags) $(mainlink) -lc++abi -o $(name)
+	@$(CXX) -L$(vendor)/lib -L$(lib) $(libflags) $(frameworkflags) $(ldflags) $(mainlink) -o $(name)
+
+$(BUILD)/%.o: %.xm $(headers)
+	@echo $(shell if [ $< -nt $(BUILD)/$(patsubst %.xm,%.mm,$<) ]; then echo logos; $(THEOS)/bin/logos.pl $< > $(BUILD)/$(patsubst %.xm,%.mm,$<); fi)
+	@cp $(BUILD)/$(patsubst %.xm,%.mm,$<) .
+	@echo compiling $(patsubst %.xm,%.mm,$<)
+	@$(CXX) $(flags) -c -I$(include) -I$(vendor)/include -I/usr/lib/llvm-10/include/c++/v1 $(patsubst %.xm,%.mm,$<) -o $@
+	@rm $(patsubst %.xm,%.mm,$<)
+	
 
 $(BUILD)/%.o: %.m $(headers)
 	@echo compiling $<
-	@$(CC) $(flags) -c -I$(include) $< -o $@
+	@$(CC) $(flags) -c -I$(include) -I$(vendor)/include $< -o $@
 
 $(BUILD)/%.o: %.c $(headers)
 	@echo compiling $<
-	@$(CC) $(flags) -c -I$(include) $< -o $@
+	@$(CC) $(flags) -c -I$(include) -I$(vendor)/include $< -o $@
 
 $(BUILD)/%.o: %.mm $(headers)
 	@echo compiling $<
-	$(CXX) $(flags) -c -I$(include) -I/usr/lib/llvm-10/include/c++/v1 $< -o $@
+	@$(CXX) $(flags) -c -I$(include) -I$(vendor)/include -I/usr/lib/llvm-10/include/c++/v1 $< -o $@
 
 $(library): $(objects)
 	@$(AR) rvs $(library) $(objects)
