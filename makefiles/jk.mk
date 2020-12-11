@@ -1,4 +1,6 @@
 BUILD ?= build
+packagename ?= pkg
+BINARYDIR = $(BUILD)/$(packagename)/$(installdir)
 name ?= a.out
 
 $(shell mkdir -p $(BUILD))
@@ -22,11 +24,15 @@ mainlink = $(objects)
 libflags =
 endif
 
-all: $(name)
+all: $(BINARYDIR)/$(name)
 
-$(name): $(mainlink) $(library)
+$(BINARYDIR)/$(name): $(mainlink) $(library)
+	@mkdir -p $(BINARYDIR)
 	@echo linking: $(notdir $^)
-	@$(CXX) -L$(vendor)/lib -L$(lib) $(libflags) $(frameworkflags) $(ldflags) $(mainlink) -o $(name)
+	@$(CXX) -L$(vendor)/lib -L$(lib) $(libflags) $(frameworkflags) $(ldflags) $(mainlink) -o $@
+ifdef cpbinary
+	cp $(BINARYDIR)/$(name) .
+endif
 
 $(BUILD)/%.o: %.xm $(headers)
 	@echo $(shell if [ $< -nt $(BUILD)/$(patsubst %.xm,%.mm,$<) ]; then echo logos; $(THEOS)/bin/logos.pl $< > $(BUILD)/$(patsubst %.xm,%.mm,$<); fi)
