@@ -125,7 +125,7 @@ $(include)/%.h: %.h
 	@echo installing $<
 	@cp $< $@
 
-package: all $(BINARYDIR)/$(name)
+package: all $(BINARYDIR)/$(name) $(plistfile)
 	@$(copy_resources)
 	@mkdir -p $(BUILD)/$(packagename)/DEBIAN
 	@cp control $(BUILD)/$(packagename)/DEBIAN/control
@@ -133,12 +133,13 @@ package: all $(BINARYDIR)/$(name)
 
 install:
 	@dpkg -i $(BUILD)/$(packagename).deb
-	$(kill_target)
+	@echo -e "\e[1;30m$(kill_target)$(nocolor)"
+	@$(kill_target) 2> /dev/null || true
 
 c: clean
 
 clean:
-	rm -r $(BUILD)
+	rm -r $(BUILD)/*
 
 remove:
 	@$(shell echo -e "\e[1;30mdpkg -r "`grep $(controlfile) -e Package:|sed 's/Package://g'|xargs`"$(nocolor)" > `tty`)
@@ -146,7 +147,7 @@ remove:
 	@$(kill_target)
 
 e: all
-	./$(name)
+	./$(BINARYDIR)/$(name)
 
 a:clean all
 
